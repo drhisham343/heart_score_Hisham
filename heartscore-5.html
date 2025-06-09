@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HEART Score Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #f4f4f4;
+      border-radius: 10px;
+    }
+    h1 {
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+    }
+    select {
+      width: 100%;
+      padding: 8px;
+      margin: 10px 0 20px;
+    }
+    .result {
+      padding: 15px;
+      font-size: 1.2em;
+      border-radius: 5px;
+    }
+    .low { background-color: #d4edda; color: #155724; }
+    .moderate { background-color: #fff3cd; color: #856404; }
+    .high { background-color: #f8d7da; color: #721c24; }
+
+    .info-btn {
+      background-color: transparent;
+      border: none;
+      color: #007bff;
+      font-size: 1.1em;
+      cursor: pointer;
+      margin-left: 6px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 8px;
+      position: relative;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px; right: 15px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .logo {
+      display: block;
+      margin: 0 auto 20px;
+      max-width: 100%;
+      height: auto;
+    }
+    .download-link {
+      text-align: center;
+      margin-top: 40px;
+    }
+    .download-link a {
+      font-size: 1.1em;
+      color: #007bff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <img src="logo_comp.jpg" alt="Kuwait Center Logo" class="logo">
+
+  <h1>HEART Score Calculator</h1>
+
+  <form id="heartForm">
+    <label for="history">
+      History
+      <button class="info-btn" type="button" onclick="showModal('history')">ⓘ</button>
+    </label>
+    <select id="history">
+      <option value="0">Slightly suspicious (0)</option>
+      <option value="1">Moderately suspicious (1)</option>
+      <option value="2">Highly suspicious (2)</option>
+    </select>
+
+    <label for="ecg">ECG</label>
+    <select id="ecg">
+      <option value="0">Normal (0)</option>
+      <option value="1">Non-specific repolarization disturbance (1)</option>
+      <option value="2">Significant ST-depression (2)</option>
+    </select>
+
+    <label for="age">Age</label>
+    <select id="age">
+      <option value="0">&lt; 45 years (0)</option>
+      <option value="1">45–64 years (1)</option>
+      <option value="2">&ge; 65 years (2)</option>
+    </select>
+
+    <label for="riskFactors">
+      Risk Factors
+      <button class="info-btn" type="button" onclick="showModal('risk')">ⓘ</button>
+    </label>
+    <select id="riskFactors">
+      <option value="0">No known risk factors (0)</option>
+      <option value="1">1–2 risk factors (1)</option>
+      <option value="2">&ge; 3 risk factors / history of atherosclerotic disease (2)</option>
+    </select>
+
+    <label for="troponin">
+      Troponin
+      <button class="info-btn" type="button" onclick="showModal('troponin')">ⓘ</button>
+    </label>
+    <select id="troponin">
+      <option value="0">≤ Normal limit (0)</option>
+      <option value="1">1–3x normal limit (1)</option>
+      <option value="2">&gt; 3x normal limit (2)</option>
+    </select>
+
+    <div id="scoreResult" class="result"></div>
+  </form>
+
+  <!-- Modals -->
+  <div id="modal-history" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="hideModal('history')">&times;</span>
+      <h3>Chest Pain Categorization (History)</h3>
+      <ul>
+        <li><strong>Highly Suspicious (2 points):</strong> Central pressure, radiation, exertional, nitro relief, with symptoms like dyspnea or nausea.</li>
+        <li><strong>Moderately Suspicious (1 point):</strong> Atypical symptoms with some anginal hints.</li>
+        <li><strong>Slightly Suspicious (0 points):</strong> Pleuritic, positional, reproducible, or GERD/anxiety-related pain.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="modal-risk" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="hideModal('risk')">&times;</span>
+      <h3>Risk Factors Considered</h3>
+      <ul>
+        <li>Hypertension</li>
+        <li>Hyperlipidemia</li>
+        <li>Diabetes Mellitus</li>
+        <li>Smoking</li>
+        <li>Family history of premature CAD</li>
+        <li>Obesity (BMI ≥30)</li>
+        <li>Known atherosclerotic disease</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="modal-troponin" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="hideModal('troponin')">&times;</span>
+      <h3>Troponin Assessment Guidance</h3>
+      <ul>
+        <li><strong>I.STAT troponin is not sensitive</strong> — order with hs-troponin and repeat at 1, 3, and 6 hours.</li>
+        <li>Initial high levels may be from renal impairment, sepsis, anemia, etc.</li>
+        <li><strong>Significant elevation</strong> = &gt;20% change in hs-cTn.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="download-link">
+    <a href="chest pain policy1.pdf" download>📄 Download Chest Pain Policy (PDF)</a>
+  </div>
+
+  <script>
+    const form = document.getElementById('heartForm');
+    const result = document.getElementById('scoreResult');
+
+    function calculate() {
+      const history = +document.getElementById('history').value;
+      const ecg = +document.getElementById('ecg').value;
+      const age = +document.getElementById('age').value;
+      const risk = +document.getElementById('riskFactors').value;
+      const trop = +document.getElementById('troponin').value;
+
+      const total = history + ecg + age + risk + trop;
+
+      let riskLevel = '';
+      let cssClass = '';
+
+      if (total <= 3) {
+        riskLevel = 'Low Risk (0–3): Discharge with outpatient follow-up';
+        cssClass = 'low';
+      } else if (total <= 6) {
+        riskLevel = 'Moderate Risk (4–6): Refer for chest pain unit/CCU capable hospital for observation.';
+        cssClass = 'moderate';
+      } else {
+        riskLevel = 'High Risk (7–10): Arrange for referral utilizing Emergency response system.';
+        cssClass = 'high';
+      }
+
+      result.className = `result ${cssClass}`;
+      result.textContent = `Total Score: ${total} — ${riskLevel}`;
+    }
+
+    form.addEventListener('change', calculate);
+    calculate();
+
+    function showModal(type) {
+      document.getElementById('modal-' + type).style.display = 'block';
+    }
+
+    function hideModal(type) {
+      document.getElementById('modal-' + type).style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      ['history', 'risk', 'troponin'].forEach(type => {
+        const modal = document.getElementById('modal-' + type);
+        if (event.target === modal) modal.style.display = 'none';
+      });
+    };
+  </script>
+</body>
+</html>
